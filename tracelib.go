@@ -74,10 +74,14 @@ func RunTrace(host string, source string, source6 string, maxrtt time.Duration, 
 	res.maxrtt = maxrtt
 	res.maxttl = maxttl
 	res.id = rand.Int() % 0x7fff
+
+	// ICMP Traceroute Payload
+	payload := make([]byte, 64)
+
 	if isIPv6 {
-		res.msg = icmp.Message{Type: ipv6.ICMPTypeEchoRequest, Code: 0, Body: &icmp.Echo{ID: res.id, Seq: 1}}
+		res.msg = icmp.Message{Type: ipv6.ICMPTypeEchoRequest, Code: 0, Body: &icmp.Echo{ID: res.id, Seq: 1, Data: payload}}
 	} else {
-		res.msg = icmp.Message{Type: ipv4.ICMPTypeEcho, Code: 0, Body: &icmp.Echo{ID: res.id, Seq: 1}}
+		res.msg = icmp.Message{Type: ipv4.ICMPTypeEcho, Code: 0, Body: &icmp.Echo{ID: res.id, Seq: 1, Data: payload}}
 	}
 	res.netmsg, err = res.msg.Marshal(nil)
 
